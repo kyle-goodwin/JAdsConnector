@@ -23,8 +23,15 @@ public class Main implements VariableObserver {
 	}
 
 	public static void main(String args[]) throws Exception {
-		// final VariableLocator locator = new VariableLocator(
-		// new VariableExpander(new TpyFile("Test.tpy")).getVariables());
+		final VariableLocator locator = new VariableLocator(
+		new VariableExpander(new TpyFile("Test.tpy")).getVariables());
+
+		/*
+		- Faulting extracting types from .tpy file. TpyFile.extractTypes()
+		- The last one it reads has name="GUID"
+		- This is not a datatype. Need to look into method that is parsing.
+		- Quest fails at 39, Test fails at 20.
+		*/
 
 		// final InetAddress destIp = InetAddress.getByName("192.168.1.2");
 		// final String destNetId = "1.2.3.4.1.1";

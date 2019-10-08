@@ -35,13 +35,11 @@ public class TpyFile implements TypeInformationContainer {
 		} catch (TpyException ex) {
 			throw ex;
 		} catch (NumberFormatException ex) {
-			throw new TpyException("Invalid numeric value in TPY file: "
-					+ ex.getMessage());
+			throw new TpyException("Invalid numeric value in TPY file: " + ex.getMessage());
 		} catch (IllegalArgumentException ex) {
 			throw new TpyException("Invalid TPY file: " + ex.getMessage());
 		} catch (Exception ex) {
-			throw new TpyException("Internal error opening TPY file: "
-					+ ex.getMessage());
+			throw new TpyException("Internal error opening TPY file: " + ex.getMessage());
 		}
 	}
 
@@ -61,8 +59,10 @@ public class TpyFile implements TypeInformationContainer {
 
 		final Node root = getSingleChildNodeByName(doc, "PlcProjectInfo");
 		final Node dataTypes = getSingleChildNodeByName(root, "DataTypes");
-		final List<Node> listOfDataType = getChildNodesByName(dataTypes,
-				"DataType");
+		final List<Node> listOfDataType = getChildNodesByName(dataTypes,"DataType");
+		/***TESTING***/
+		int testInt = 1;
+		/***TESTING***/
 
 		for (final Node dataType : listOfDataType) {
 			final String name = getTextOfChildNodeByName(dataType, "Name");
@@ -70,23 +70,33 @@ public class TpyFile implements TypeInformationContainer {
 			List<Node> subItems = getChildNodesByName(dataType, "SubItem");
 			List<Node> arrayInfo = getChildNodesByName(dataType, "ArrayInfo");
 
+			/***TESTING***/
+			//System fails parsing the 19th type.
+			System.out.println(testInt);
+			testInt++;
+			/***TESTING***/
+
 			if (subItems.size() > 0) {
 				ret.put(name, makeStructType(name, bitSize, subItems));
 			} else if (arrayInfo.size() > 0) {
 				final String type = getTextOfChildNodeByName(dataType, "Type");
 				if (arrayInfo.size() == 1)
 					ret.put(name,
-							makeOneDimensionalArrayType(name, bitSize, type,
-									arrayInfo.get(0)));
+							makeOneDimensionalArrayType(name, bitSize, type, arrayInfo.get(0)));
 				else if (arrayInfo.size() == 2)
-					ret.put(name,
-							makeTwoDimensionalArrayType(name, bitSize, type,
-									arrayInfo.get(0), arrayInfo.get(1)));
+					ret.put(name, makeTwoDimensionalArrayType(name, bitSize, type, arrayInfo.get(0), arrayInfo.get(1)));
 				else
 					throw new IllegalArgumentException(
 							"Arrays with more than two dimensions not supported");
 			} else {
+				/***TESTING***/
+				System.out.println("Not a datatype or array");
+				//We are failig here on the 19th dataType.
+				/***TESTING***/
 				final String type = getTextOfChildNodeByName(dataType, "Type");
+				/***TESTING***/
+				System.out.println(type);
+				/***TESTING***/
 				ret.put(name, new Type(name, type, Long.valueOf(bitSize)));
 			}
 		}
@@ -94,18 +104,14 @@ public class TpyFile implements TypeInformationContainer {
 		return ret;
 	}
 
-	private static Type makeStructType(final String name, final String bitSize,
-			final List<Node> subItems) throws TpyException {
+	private static Type makeStructType(final String name, final String bitSize, final List<Node> subItems) throws TpyException {
 		final List<StructItem> structItems = new LinkedList<StructItem>();
 		for (final Node subItem : subItems) {
 			final String subName = getTextOfChildNodeByName(subItem, "Name");
 			final String subType = getTextOfChildNodeByName(subItem, "Type");
-			final String subBitSize = getTextOfChildNodeByName(subItem,
-					"BitSize");
-			final String subBitOffs = getTextOfChildNodeByName(subItem,
-					"BitOffs");
-			structItems.add(new StructItem(subName, subType, Long
-					.valueOf(subBitSize), Long.valueOf(subBitOffs)));
+			final String subBitSize = getTextOfChildNodeByName(subItem, "BitSize");
+			final String subBitOffs = getTextOfChildNodeByName(subItem, "BitOffs");
+			structItems.add(new StructItem(subName, subType, Long.valueOf(subBitSize), Long.valueOf(subBitOffs)));
 		}
 		return new StructType(name, Long.valueOf(bitSize), structItems);
 	}
@@ -115,8 +121,7 @@ public class TpyFile implements TypeInformationContainer {
 			throws TpyException {
 		final long lowerBound = getLowerBoundFromNode(arrayInfo);
 		final long upperBound = getUpperBoundFromNode(arrayInfo, lowerBound);
-		return new OneDimensionalArrayType(name, Long.valueOf(bitSize), type,
-				lowerBound, upperBound);
+		return new OneDimensionalArrayType(name, Long.valueOf(bitSize), type, lowerBound, upperBound);
 	}
 
 	private static Type makeTwoDimensionalArrayType(final String name,
@@ -126,8 +131,7 @@ public class TpyFile implements TypeInformationContainer {
 		final long lowerBound2 = getLowerBoundFromNode(arrayInfo2);
 		final long upperBound1 = getUpperBoundFromNode(arrayInfo1, lowerBound1);
 		final long upperBound2 = getUpperBoundFromNode(arrayInfo2, lowerBound2);
-		return new TwoDimensionalArrayType(name, Long.valueOf(bitSize), type,
-				lowerBound1, upperBound1, lowerBound2, upperBound2);
+		return new TwoDimensionalArrayType(name, Long.valueOf(bitSize), type, lowerBound1, upperBound1, lowerBound2, upperBound2);
 	}
 
 	private static long getLowerBoundFromNode(final Node arrayInfo)
@@ -156,33 +160,27 @@ public class TpyFile implements TypeInformationContainer {
 			final String group = getTextOfChildNodeByName(symbol, "IGroup");
 			final String offset = getTextOfChildNodeByName(symbol, "IOffset");
 			final String bitSize = getTextOfChildNodeByName(symbol, "BitSize");
-			ret.add(new Variable(name, type, Long.valueOf(group), Long
-					.valueOf(offset), Long.valueOf(bitSize)));
+			ret.add(new Variable(name, type, Long.valueOf(group), Long.valueOf(offset), Long.valueOf(bitSize)));
 		}
 
 		return ret;
 	}
 
-	private static Node getSingleChildNodeByName(final Node node,
-			final String name) throws TpyException {
+	private static Node getSingleChildNodeByName(final Node node, final String name) throws TpyException {
 		final List<Node> nodesWithThatName = getChildNodesByName(node, name);
 		assertExactlyOneNode(nodesWithThatName);
 		return nodesWithThatName.get(0);
 	}
 
-	private static void assertExactlyOneNode(final List<Node> nodes)
-			throws TpyException {
+	private static void assertExactlyOneNode(final List<Node> nodes) throws TpyException {
 		final String nodeName = nodes.get(0).getNodeName();
 		if (nodes.size() == 0)
-			throw new TpyException("Invalid TPY file: No <" + nodeName
-					+ "> node found");
+			throw new TpyException("Invalid TPY file: No <" + nodeName + "> node found");
 		if (nodes.size() != 1)
-			throw new TpyException("Invalid TPY file: Multiple <" + nodeName
-					+ "> nodes found");
+			throw new TpyException("Invalid TPY file: Multiple <" + nodeName + "> nodes found");
 	}
 
-	private static List<Node> getChildNodesByName(final Node node,
-			final String name) {
+	private static List<Node> getChildNodesByName(final Node node, final String name) {
 		final List<Node> ret = new LinkedList<Node>();
 		final NodeList children = node.getChildNodes();
 		for (int i = 0; i < children.getLength(); ++i)
@@ -191,8 +189,7 @@ public class TpyFile implements TypeInformationContainer {
 		return ret;
 	}
 
-	private static String getTextOfChildNodeByName(final Node node,
-			final String name) throws TpyException {
+	private static String getTextOfChildNodeByName(final Node node, final String name) throws TpyException {
 		return getSingleChildNodeByName(node, name).getTextContent();
 	}
 
