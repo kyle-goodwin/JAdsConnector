@@ -45,8 +45,7 @@ public class TpyFile implements TypeInformationContainer {
 
 	private void parseFile(final String fileName) throws TpyException {
 		try {
-			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.parse(new File(fileName));
+			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(fileName));
 		} catch (IOException ex) {
 			throw new TpyException("Error reading TPY file");
 		} catch (Exception ex) {
@@ -81,13 +80,11 @@ public class TpyFile implements TypeInformationContainer {
 			} else if (arrayInfo.size() > 0) {
 				final String type = getTextOfChildNodeByName(dataType, "Type");
 				if (arrayInfo.size() == 1)
-					ret.put(name,
-							makeOneDimensionalArrayType(name, bitSize, type, arrayInfo.get(0)));
+					ret.put(name, makeOneDimensionalArrayType(name, bitSize, type, arrayInfo.get(0)));
 				else if (arrayInfo.size() == 2)
 					ret.put(name, makeTwoDimensionalArrayType(name, bitSize, type, arrayInfo.get(0), arrayInfo.get(1)));
 				else
-					throw new IllegalArgumentException(
-							"Arrays with more than two dimensions not supported");
+					throw new IllegalArgumentException("Arrays with more than two dimensions not supported");
 			} else {
 				/***TESTING***/
 				System.out.println("Not a datatype or array");

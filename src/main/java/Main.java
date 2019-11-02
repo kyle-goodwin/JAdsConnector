@@ -16,15 +16,19 @@ import org.lb.plc.*;
 import org.lb.plc.tpy.*;
 
 public class Main implements VariableObserver {
-	@Override
+	//@Override
+	
 	public void variableChanged(String variable, Object newValue) {
 		System.out.println("Variable " + variable + " has a new value: "
 				+ newValue);
 	}
 
 	public static void main(String args[]) throws Exception {
-		final VariableLocator locator = new VariableLocator(
-		new VariableExpander(new TpyFile("Test.tpy")).getVariables());
+		
+		System.out.println("test anotssehr");
+
+		final VariableLocator locator = new VariableLocator(new VariableExpander(new TpyFile("tpy files/Test.tpy")).getVariables());
+
 
 		/*
 		- Faulting extracting types from .tpy file. TpyFile.extractTypes()
