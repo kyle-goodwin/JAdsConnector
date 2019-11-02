@@ -25,8 +25,7 @@ public class Main implements VariableObserver {
 
 	public static void main(String args[]) throws Exception {
 		
-		System.out.println("test anotssehr");
-
+		@SuppressWarnings("unused")
 		final VariableLocator locator = new VariableLocator(new VariableExpander(new TpyFile("tpy files/Test.tpy")).getVariables());
 
 
