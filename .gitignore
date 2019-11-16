@@ -21,7 +21,7 @@
 
 #VSCode directories
 .setting*
-.vscode*
+#.vscode*
 
 #Maven directories
 target*

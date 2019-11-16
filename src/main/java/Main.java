@@ -14,7 +14,7 @@
 
 import org.lb.plc.*;
 import org.lb.plc.tpy.*;
-import java.util.*;
+//import java.util.*;
 
 public class Main implements VariableObserver {
 	//@Override
@@ -42,6 +42,7 @@ public class Main implements VariableObserver {
 		//Expander errors out if datatype is not defined in the .tpy (system types). The only place to add in system types is in VariableExpander.getByteSizeFromName().
 		//I do not like it. Need to refactor... something.
 		final VariableExpander expander = new VariableExpander(file);
+		@SuppressWarnings("unused")
 		final VariableLocator locator = new VariableLocator(expander.getVariables());
 
 		//final VariableLocator locator = new VariableLocator(new VariableExpander(new TpyFile("tpy files/testPLC1-pretty.tpy")).getVariables());
