@@ -66,10 +66,10 @@ public abstract class Payload {
 			return ReadResponse.valueOf(data);
 		case 3:
 			return WriteResponse.valueOf(data);
-			// case 4:
-			// return AdsReadStateResponse.valueOf(data);
-			// case 5:
-			// return AdsWriteControlResponse.valueOf(data);
+		case 4:
+			return ReadStateResponse.valueOf(data);
+		case 5:
+			return WriteControlResponse.valueOf(data);
 		case 6:
 			return AddNotificationResponse.valueOf(data);
 		case 7:

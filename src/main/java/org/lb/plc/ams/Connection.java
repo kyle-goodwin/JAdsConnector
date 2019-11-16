@@ -52,7 +52,9 @@ public class Connection {
 	}
 
 	public void write(Packet data) throws IOException {
-		out.write(data.toBinary());
+		if (data.toBinary() != null) {
+			out.write(data.toBinary());
+		}
 	}
 
 	public Packet read() throws IOException {
@@ -85,9 +87,9 @@ public class Connection {
 					leftToRead);
 			if (thisTimeRead == -1) {
 				// TODO: continue; ?
-				throw new IOException("Unexpected end of data stream");
-			}
-			bytesRead += thisTimeRead;
+				//throw new IOException("Unexpected end of data stream");
+			} else
+				bytesRead += thisTimeRead;
 		}
 
 		if (bytesRead != length)

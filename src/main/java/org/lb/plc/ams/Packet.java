@@ -112,18 +112,40 @@ public class Packet {
 
 	public byte[] toBinary() {
 		byte[] payloadData = payload.toBinary();
-		byte[] ret = new byte[6 + 32 + payloadData.length];
+		int payloadLength = 0;
+		if (payloadData != null) {
+			payloadLength = payloadData.length;
+		}
+		byte[] ret = new byte[6 + 32 + payloadLength];
 		Toolbox.copyIntoByteArray(ret, 2, Toolbox
-				.uint32ToBytes(32 + payloadData.length));
+				.uint32ToBytes(32 + payloadLength));
 		Toolbox.copyIntoByteArray(ret, 6, peerPair.toBinary());
 		Toolbox.copyIntoByteArray(ret, 22, Toolbox.uint16ToBytes(command));
 		Toolbox.copyIntoByteArray(ret, 24, Toolbox.uint16ToBytes(flags));
 		Toolbox.copyIntoByteArray(ret, 26, Toolbox
-				.uint32ToBytes(payloadData.length));
+				.uint32ToBytes(payloadLength));
 		Toolbox.copyIntoByteArray(ret, 30, Toolbox.uint32ToBytes(errorCode));
 		Toolbox.copyIntoByteArray(ret, 34, Toolbox.uint32ToBytes(id));
-		Toolbox.copyIntoByteArray(ret, 38, payloadData);
+		if (payloadData != null)
+			Toolbox.copyIntoByteArray(ret, 38, payloadData);
 		return ret;
+		/*
+		byte[] payloadData = payload.toBinary();
+		int payloadLength = 0;
+		if (payloadData != null) {
+			payloadLength = payloadData.length;
+		}
+		byte[] ret = new byte[32 + payloadLength];
+		Toolbox.copyIntoByteArray(ret, 0, peerPair.toBinary());
+		Toolbox.copyIntoByteArray(ret, 16, Toolbox.uint16ToBytes(command));
+		Toolbox.copyIntoByteArray(ret, 18, Toolbox.uint16ToBytes(flags));
+		Toolbox.copyIntoByteArray(ret, 20, Toolbox
+				.uint32ToBytes(payloadLength));
+		Toolbox.copyIntoByteArray(ret, 24, Toolbox.uint32ToBytes(errorCode));
+		Toolbox.copyIntoByteArray(ret, 28, Toolbox.uint32ToBytes(id));
+		if (payloadData != null)
+			Toolbox.copyIntoByteArray(ret, 32, payloadData);
+		return ret;*/ 
 	}
 
 	public Payload getAdsPayload() {

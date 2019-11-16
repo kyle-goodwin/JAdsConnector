@@ -70,6 +70,24 @@ public class SimpleAdsInterface {
 		final Payload response = converse(new ReadRequest(group, offset, length));
 		return ((ReadResponse) response).getPayload();
 	}
+	
+	public ErrorCode writeControl(short adsState, short devState, byte [] data) throws IOException, AmsException {
+		Payload response = converse(new WriteControlRequest(adsState, devState, data));
+		
+		return ((WriteControlResponse)response).getErrorCode();
+	}
+	
+	public short getAdsState() throws IOException, AmsException {
+		Payload response = converse(new ReadStateRequest());
+		
+		return ((ReadStateResponse)response).getAdsState();
+	}
+	
+	public short getDevState() throws IOException, AmsException {
+		Payload response = converse(new ReadStateRequest());
+		
+		return ((ReadStateResponse)response).getDevState();
+	}
 
 	public void write(final long group, final long offset, final byte[] data)
 			throws IOException, AmsException {

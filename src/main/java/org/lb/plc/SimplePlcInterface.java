@@ -19,6 +19,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.lb.plc.ams.AmsException;
+import org.lb.plc.ams.ErrorCode;
 import org.lb.plc.ams.NotificationObserver;
 import org.lb.plc.tpy.*;
 
@@ -76,6 +77,55 @@ public class SimplePlcInterface {
 		return conn.getDeviceVersion();
 	}
 
+	/**
+	 * AdsWriteControl (0x0005) - change device status
+	 * 
+	 * @param adsState The ADS state
+	 * @param devState The device state
+	 * @param data The additional data
+	 * 
+	 * @return {@link ErrorCode}
+	 */
+	public ErrorCode writeControl(final short adsState, final short devState, final byte [] data) throws IOException, AmsException {
+		return conn.writeControl(adsState, devState, data);
+	}
+	
+	/**
+	 * AdsReadState (0x0004) - read ads/device status
+	 * 
+	 * @return The ADS status
+	 * 
+	 * @throws IOException
+	 * @throws AmsException
+	 */
+	public short getAdsState() throws IOException, AmsException {
+		return conn.getAdsState();
+	}
+	
+	/**
+	 * AdsReadState (0x0004) - read ads/device status
+	 * 
+	 * @return The device status
+	 * 
+	 * @throws IOException
+	 * @throws AmsException
+	 */
+	public short getDevState() throws IOException, AmsException {
+		return conn.getDevState();
+	}
+
+	public boolean getVariableAsBool(final String name) throws IOException, AmsException,
+	       TpyException {
+		//Variable var = variableLocator.getVariableByName(name);
+		final byte[] data = readByName(name);
+		if (data[0] == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	
 	public long getVariableAsInteger(final String name) throws IOException,
 			AmsException, TpyException {
 		Variable var = variableLocator.getVariableByName(name);
@@ -98,7 +148,10 @@ public class SimplePlcInterface {
 	private byte[] readByName(final String name) throws IOException,
 			AmsException, TpyException {
 		final Variable var = variableLocator.getVariableByName(name);
-		return conn.read(var.group, var.offset, var.bitSize / 8);
+		if (var.bitSize == 1) {
+			return conn.read(var.group, var.offset, 1);
+		} else 
+			return conn.read(var.group, var.offset, var.bitSize / 8);
 	}
 
 	public void setVariable(final String name, final long value)
