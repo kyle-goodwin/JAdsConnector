@@ -59,21 +59,16 @@ public class TpyFile implements TypeInformationContainer {
 		final Node root = getSingleChildNodeByName(doc, "PlcProjectInfo");
 		final Node dataTypes = getSingleChildNodeByName(root, "DataTypes");
 		final List<Node> listOfDataType = getChildNodesByName(dataTypes,"DataType");
-		/***TESTING***/
-		int testInt = 1;
-		/***TESTING***/
 
 		for (final Node dataType : listOfDataType) {
+			System.out.println(getTextOfChildNodeByName(dataType, "Name"));
+			//System.out.println(dataType);
+			//System.out.println(getTextOfChildNodeByName(dataType, "Name") + " " + getTextOfChildNodeByName(dataType, "Type"));
+
 			final String name = getTextOfChildNodeByName(dataType, "Name");
 			final String bitSize = getTextOfChildNodeByName(dataType, "BitSize");
 			List<Node> subItems = getChildNodesByName(dataType, "SubItem");
 			List<Node> arrayInfo = getChildNodesByName(dataType, "ArrayInfo");
-
-			/***TESTING***/
-			//System fails parsing the 19th type.
-			System.out.println(testInt);
-			testInt++;
-			/***TESTING***/
 
 			if (subItems.size() > 0) {
 				ret.put(name, makeStructType(name, bitSize, subItems));
@@ -86,14 +81,7 @@ public class TpyFile implements TypeInformationContainer {
 				else
 					throw new IllegalArgumentException("Arrays with more than two dimensions not supported");
 			} else {
-				/***TESTING***/
-				System.out.println("Not a datatype or array");
-				//We are failig here on the 19th dataType.
-				/***TESTING***/
 				final String type = getTextOfChildNodeByName(dataType, "Type");
-				/***TESTING***/
-				System.out.println(type);
-				/***TESTING***/
 				ret.put(name, new Type(name, type, Long.valueOf(bitSize)));
 			}
 		}

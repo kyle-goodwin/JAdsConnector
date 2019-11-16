@@ -19,14 +19,13 @@ public class Main implements VariableObserver {
 	//@Override
 	
 	public void variableChanged(String variable, Object newValue) {
-		System.out.println("Variable " + variable + " has a new value: "
-				+ newValue);
+		System.out.println("Variable " + variable + " has a new value: " + newValue);
 	}
 
 	public static void main(String args[]) throws Exception {
 		
 		@SuppressWarnings("unused")
-		final VariableLocator locator = new VariableLocator(new VariableExpander(new TpyFile("tpy files/Test.tpy")).getVariables());
+		final VariableLocator locator = new VariableLocator(new VariableExpander(new TpyFile("tpy files/testPLC1.tpy")).getVariables());
 
 
 		/*
