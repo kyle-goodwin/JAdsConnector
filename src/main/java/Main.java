@@ -14,6 +14,7 @@
 
 import org.lb.plc.*;
 import org.lb.plc.tpy.*;
+import java.util.*;
 
 public class Main implements VariableObserver {
 	//@Override
@@ -24,16 +25,26 @@ public class Main implements VariableObserver {
 
 	public static void main(String args[]) throws Exception {
 		
-		@SuppressWarnings("unused")
-		final VariableLocator locator = new VariableLocator(new VariableExpander(new TpyFile("tpy files/testPLC1.tpy")).getVariables());
-
-
 		/*
-		- Faulting extracting types from .tpy file. TpyFile.extractTypes()
-		- The last one it reads has name="GUID"
-		- This is not a datatype. Need to look into method that is parsing.
-		- Quest fails at 39, Test fails at 20.
+		System.out.println(" ");
+		TpyFile tpyFile = new TpyFile("tpy files/testPLC1-pretty.tpy");
+		Map<String, Type> types = tpyFile.getTypes();
+		for (String key : types.keySet()){
+			Type type = types.get(key);
+			System.out.println(type.getClass() + ": " + key);
+		}
+		System.out.println(" ");
+		for (Variable item : tpyFile.getVariables()){
+			System.out.println(item.type + " : " + item.name);
+		}
 		*/
+		final TpyFile file = new TpyFile("tpy files/testPLC1-pretty.tpy");
+		//Expander errors out if datatype is not defined in the .tpy (system types). The only place to add in system types is in VariableExpander.getByteSizeFromName().
+		//I do not like it. Need to refactor... something.
+		final VariableExpander expander = new VariableExpander(file);
+		final VariableLocator locator = new VariableLocator(expander.getVariables());
+
+		//final VariableLocator locator = new VariableLocator(new VariableExpander(new TpyFile("tpy files/testPLC1-pretty.tpy")).getVariables());
 
 		// final InetAddress destIp = InetAddress.getByName("192.168.1.2");
 		// final String destNetId = "1.2.3.4.1.1";

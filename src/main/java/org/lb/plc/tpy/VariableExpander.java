@@ -20,27 +20,22 @@ public final class VariableExpander {
 	private final TypeInformationContainer typeInfo;
 	private List<Variable> variables;
 
-	public VariableExpander(final TypeInformationContainer typeInfo)
-			throws TpyException {
+	public VariableExpander(final TypeInformationContainer typeInfo) throws TpyException {
 		this.typeInfo = typeInfo;
 		this.variables = new LinkedList<Variable>();
-		populateVariableList();
-	}
-
-	private void populateVariableList() throws TpyException {
-		for (final Variable var : typeInfo.getVariables())
+		//System.out.println("\n--- VariableExpander()");		//test output
+		for (final Variable var : typeInfo.getVariables()) {
 			addSubVariables(var);
+		}
 	}
 
 	private void addSubVariables(final Variable var) throws TpyException {
-		if (isScalarType(var.type))
+		if (getByteSizeFromName(var.type) > 0) 
 			variables.add(var);
-		else
+		else {
+			//System.out.println("adding complex type:" + var.type);
 			addSubVariablesForComplexType(var, getTypeFromName(var.type));
-	}
-
-	private static boolean isScalarType(final String type) {
-		return getByteSizeFromName(type) > 0;
+		}
 	}
 
 	private void addSubVariablesForComplexType(final Variable var,
@@ -67,26 +62,26 @@ public final class VariableExpander {
 		}
 	}
 
-	private void addSubVariablesForOneDimensionalArray(final Variable var,
-			final OneDimensionalArrayType arrayType) throws TpyException {
-		final long subBitSize = isScalarType(arrayType.type) ? 8 * getByteSizeFromName(arrayType.type)
-				: getTypeFromName(arrayType.type).bitSize;
+	private void addSubVariablesForOneDimensionalArray(final Variable var, final OneDimensionalArrayType arrayType) throws TpyException {
+		final long subBitSize = getByteSizeFromName(arrayType.type) > 0 ? 8 * getByteSizeFromName(arrayType.type) : getTypeFromName(arrayType.type).bitSize;
 		final long subByteSize = subBitSize / 8;
 		for (long i = arrayType.lowerBound, variableNumber = 0; i <= arrayType.upperBound; ++i, ++variableNumber) {
 			final String subName = var.name + "[" + i + "]";
 			final long subOffset = variableNumber * subByteSize + var.offset;
-			addSubVariables(new Variable(subName, arrayType.type, var.group,
-					subOffset, subBitSize));
+			addSubVariables(new Variable(subName, arrayType.type, var.group, subOffset, subBitSize));
 		}
 	}
 
 	private Type getTypeFromName(final String name) throws TpyException {
 		final Type type = typeInfo.getTypes().get(name);
+		//System.out.println(type + " : " + name);
 		if (type == null)
 			throw new TpyException("Unknown type: '" + name + "'");
 		return type;
 	}
 
+	//This seems to be the only palce to define system datatypes that are not explicitly defined in the .tpy file.
+	//Would like to re-write this.
 	private static long getByteSizeFromName(final String name) {
 		if (name.equals("BOOL"))
 			return 1;
@@ -102,8 +97,10 @@ public final class VariableExpander {
 			return 2;
 		if (name.equals("WORD"))
 			return 2;
-		if (name.equals("DWORD"))
+		if (name.equals("DWORD") || name.equals("DATE_AND_TIME"))
 			return 4;
+		if (name.equals("LINT") || name.equals("ITComObjectServer"))
+			return 8;
 		if (name.equals("DINT"))
 			return 4;
 		if (name.equals("UDINT"))

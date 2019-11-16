@@ -23,8 +23,7 @@ public class Variable {
 	public final long offset;
 	public final long bitSize;
 
-	public Variable(final String name, final String type, final long group,
-			final long offset, final long bitSize) {
+	public Variable(final String name, final String type, final long group, final long offset, final long bitSize) {
 		this.name = name;
 		this.type = type;
 		this.group = group;

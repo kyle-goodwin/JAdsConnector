@@ -60,16 +60,13 @@ public class TpyFile implements TypeInformationContainer {
 		final Node dataTypes = getSingleChildNodeByName(root, "DataTypes");
 		final List<Node> listOfDataType = getChildNodesByName(dataTypes,"DataType");
 
+		//System.out.println("------\nTpyFile.extractTypes()\n");				//test output
 		for (final Node dataType : listOfDataType) {
-			System.out.println(getTextOfChildNodeByName(dataType, "Name"));
-			//System.out.println(dataType);
-			//System.out.println(getTextOfChildNodeByName(dataType, "Name") + " " + getTextOfChildNodeByName(dataType, "Type"));
-
 			final String name = getTextOfChildNodeByName(dataType, "Name");
 			final String bitSize = getTextOfChildNodeByName(dataType, "BitSize");
 			List<Node> subItems = getChildNodesByName(dataType, "SubItem");
 			List<Node> arrayInfo = getChildNodesByName(dataType, "ArrayInfo");
-
+			//System.out.println(name + ", size: " + subItems.size());		//test output
 			if (subItems.size() > 0) {
 				ret.put(name, makeStructType(name, bitSize, subItems));
 			} else if (arrayInfo.size() > 0) {
@@ -83,6 +80,7 @@ public class TpyFile implements TypeInformationContainer {
 			} else {
 				final String type = getTextOfChildNodeByName(dataType, "Type");
 				ret.put(name, new Type(name, type, Long.valueOf(bitSize)));
+				//System.out.println(name + " " + type);
 			}
 		}
 
@@ -97,6 +95,8 @@ public class TpyFile implements TypeInformationContainer {
 			final String subBitSize = getTextOfChildNodeByName(subItem, "BitSize");
 			final String subBitOffs = getTextOfChildNodeByName(subItem, "BitOffs");
 			structItems.add(new StructItem(subName, subType, Long.valueOf(subBitSize), Long.valueOf(subBitOffs)));
+			//if (name.equals("PlcAppSystemInfo"))							//test output
+			//	System.out.println("   " + subName + ", " + subType);
 		}
 		return new StructType(name, Long.valueOf(bitSize), structItems);
 	}
